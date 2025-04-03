@@ -15,7 +15,7 @@ func (e EntityType) Convert(gzipPaths iter.Seq[string], outputPath string, chunk
 	e.convert(gzipPaths, outputPath, chunk)
 }
 
-var EntityTypes = []EntityType{TypeAuthors, TypeTopics, TypeConcepts, TypeInstitutions, TypePublishers}
+var EntityTypes = []EntityType{TypeAuthors, TypeTopics, TypeConcepts, TypeInstitutions, TypePublishers, TypeSources}
 
 func EntityTypeNames(yield func(string) bool) {
 	for _, entityType := range EntityTypes {
