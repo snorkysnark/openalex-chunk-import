@@ -63,28 +63,28 @@ func convertAuthors(gzipPaths iter.Seq[string], outputPath string, chunk int) {
 			continue
 		}
 
-		authorId, hasId := data["id"]
-		if !hasId {
+		authorId := getCast[string](data, "id")
+		if authorId == nil {
 			continue
 		}
 
-		var lastKnownInstitutionId any
-		if lastKnownInstitution := data["last_known_institution"]; lastKnownInstitution != nil {
-			lastKnownInstitutionId = lastKnownInstitution.(map[string]any)["id"]
+		var lastKnownInstitutionId *string
+		if lastKnownInstitution := getCast[map[string]any](data, "last_known_institution"); lastKnownInstitution != nil {
+			lastKnownInstitutionId = getCast[string](*lastKnownInstitution, "id")
 		}
 
 		if err := authorsWriter.Encode(authorRow{
-			Id:          tryCast[string](authorId),
-			Orcid:       tryCast[string](data["orcid"]),
-			DisplayName: tryCast[string](data["display_name"]),
+			Id:          authorId,
+			Orcid:       getCast[string](data, "orcid"),
+			DisplayName: getCast[string](data, "display_name"),
 			DisplayNameAlternatives: jsontype{
 				value: data["display_name_alternatives"],
 			},
-			WorksCount:           tryCast[int](data["works_count"]),
-			CitedByCount:         tryCast[int](data["cited_by_count"]),
-			LastKnownInstitution: tryCast[string](lastKnownInstitutionId),
-			WorksApiUrl:          tryCast[string](data["works_api_url"]),
-			UpdatedDate:          tryCast[string](data["updated_date"]),
+			WorksCount:           getCast[int](data, "works_count"),
+			CitedByCount:         getCast[int](data, "cited_by_count"),
+			LastKnownInstitution: lastKnownInstitutionId,
+			WorksApiUrl:          getCast[string](data, "works_api_url"),
+			UpdatedDate:          getCast[string](data, "updated_date"),
 		}); err != nil {
 			log.Println(err)
 		}
@@ -93,13 +93,13 @@ func convertAuthors(gzipPaths iter.Seq[string], outputPath string, chunk int) {
 			authorIds := authorIds.(map[string]any)
 
 			if err := authorIdsWriter.Encode(authorIdsRow{
-				AuthorId:  tryCast[string](authorId),
-				Openalex:  tryCast[string](authorIds["openalex"]),
-				Orcid:     tryCast[string](authorIds["orcid"]),
-				Scopus:    tryCast[string](authorIds["scopus"]),
-				Twitter:   tryCast[string](authorIds["twitter"]),
-				Wikipedia: tryCast[string](authorIds["wikipedia"]),
-				Mag:       tryCast[int64](authorIds["mag"]),
+				AuthorId:  authorId,
+				Openalex:  getCast[string](authorIds, "openalex"),
+				Orcid:     getCast[string](authorIds, "orcid"),
+				Scopus:    getCast[string](authorIds, "scopus"),
+				Twitter:   getCast[string](authorIds, "twitter"),
+				Wikipedia: getCast[string](authorIds, "wikipedia"),
+				Mag:       getCast[int64](authorIds, "mag"),
 			}); err != nil {
 				log.Println(err)
 			}
@@ -112,11 +112,11 @@ func convertAuthors(gzipPaths iter.Seq[string], outputPath string, chunk int) {
 				countByYear := countByYear.(map[string]any)
 
 				if err := authorCountsWriter.Encode(authorCountsByYearRow{
-					AuthorId:     tryCast[string](authorId),
-					Year:         tryCast[int](countByYear["year"]),
-					WorksCount:   tryCast[int](countByYear["works_count"]),
-					CitedByCount: tryCast[int](countByYear["cited_by_count"]),
-					OaWorksCount: tryCast[int](countByYear["oa_works_count"]),
+					AuthorId:     authorId,
+					Year:         getCast[int](countByYear, "year"),
+					WorksCount:   getCast[int](countByYear, "works_count"),
+					CitedByCount: getCast[int](countByYear, "cited_by_count"),
+					OaWorksCount: getCast[int](countByYear, "oa_works_count"),
 				}); err != nil {
 					log.Println(err)
 				}

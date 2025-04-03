@@ -29,9 +29,8 @@ type topicsRow struct {
 }
 
 func getIdAndDisplayName(key string, data map[string]any) (*string, *string) {
-	if section := data[key]; section != nil {
-		section := section.(map[string]any)
-		return tryCast[string](section["id"]), tryCast[string](section["display_name"])
+	if section := getCast[map[string]any](data, key); section != nil {
+		return getCast[string](*section, "id"), getCast[string](*section, "display_name")
 	}
 	return nil, nil
 }
@@ -50,16 +49,17 @@ func convertTopics(gzipPaths iter.Seq[string], outputPath string, chunk int) {
 			return
 		}
 
-		topicId, exists := data["id"]
-		if !exists {
+		topicId := getCast[string](data, "id")
+		if topicId == nil {
 			continue
 		}
 
-		keywords := new(string)
-		if keywordsArr, exists := data["keywords"]; exists {
-			*keywords = strings.Join(lo.Map(keywordsArr.([]any), func(item any, index int) string {
+		var keywords *string
+		if keywordsArr := getCast[[]any](data, "keywords"); keywordsArr != nil {
+			k := strings.Join(lo.Map(*keywordsArr, func(item any, index int) string {
 				return item.(string)
 			}), "; ")
+			keywords = &k
 		}
 
 		subfieldId, subfieldDisplayName := getIdAndDisplayName("subfield", data)
@@ -67,31 +67,30 @@ func convertTopics(gzipPaths iter.Seq[string], outputPath string, chunk int) {
 		domainId, domainDisplayName := getIdAndDisplayName("domain", data)
 
 		var wikipediaId *string
-		if ids := data["ids"]; ids != nil {
-			ids := ids.(map[string]any)
-			wikipediaId = tryCast[string](ids["wikipedia"])
+		if ids := getCast[map[string]any](data, "ids"); ids != nil {
+			wikipediaId = getCast[string](*ids, "wikipedia")
 		}
 
-		updatedDate := tryCast[string](data["updated_date"])
-		if updated := data["updated"]; updated != nil {
-			updatedDate = tryCast[string](updated)
+		updatedDate := getCast[string](data, "updated_date")
+		if updated := getCast[map[string]any](data, "updated"); updated != nil {
+			updatedDate = getCast[string](*updated, "date")
 		}
 
 		topicsWriter.Encode(topicsRow{
-			Id:                  tryCast[string](topicId),
-			DisplayName:         tryCast[string](data["display_name"]),
+			Id:                  topicId,
+			DisplayName:         getCast[string](data, "display_name"),
 			SubfieldId:          subfieldId,
 			SubfieldDisplayName: subfieldDisplayName,
 			FieldId:             fieldId,
 			FieldDisplayName:    fieldDisplayName,
 			DomainId:            domainId,
 			DomainDisplayName:   domainDisplayName,
-			Description:         tryCast[string](data["description"]),
+			Description:         getCast[string](data, "description"),
 			Keywords:            keywords,
-			WorksApiUrl:         tryCast[string](data["works_api_url"]),
+			WorksApiUrl:         getCast[string](data, "works_api_url"),
 			WikipediaId:         wikipediaId,
-			WorksCount:          tryCast[int](data["works_count"]),
-			CitedByCount:        tryCast[int](data["cited_by_count"]),
+			WorksCount:          getCast[int](data, "works_count"),
+			CitedByCount:        getCast[int](data, "cited_by_count"),
 			UpdatedDate:         updatedDate,
 			Siblings:            jsontype{value: data["siblings"]},
 		})
