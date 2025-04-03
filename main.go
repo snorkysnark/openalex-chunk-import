@@ -36,9 +36,9 @@ func main() {
 	}
 	chunksFlag := flag.Int("chunks", 8, "Number of goroutines")
 
-	entityTypesSeq := converters.EntityTypeNames
+	entityTypesMaskSeq := converters.EntityTypeNames
 	flag.Func("entities", "comma-separated entity types", func(s string) error {
-		entityTypesSeq = strings.SplitSeq(s, ",")
+		entityTypesMaskSeq = strings.SplitSeq(s, ",")
 		return nil
 	})
 
@@ -51,8 +51,9 @@ func main() {
 	inputPath, outputPath := flag.Arg(0), flag.Arg(1)
 	numChunks := *chunksFlag
 
+	// Hash set of entity types that need to be converted
 	entityTypeMask := map[string]struct{}{}
-	for typeName := range entityTypesSeq {
+	for typeName := range entityTypesMaskSeq {
 		entityTypeMask[typeName] = struct{}{}
 	}
 
