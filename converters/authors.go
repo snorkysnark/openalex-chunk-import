@@ -1,4 +1,4 @@
-package flatten
+package converters
 
 import (
 	"fmt"
@@ -37,7 +37,7 @@ type authorIdsRow struct {
 	Mag       *int64  `csv:"mag"`
 }
 
-func FlattenAuthors(gzipPaths iter.Seq[string], outputPath string, chunk int) {
+func convertAuthors(gzipPaths iter.Seq[string], outputPath string, chunk int) {
 	authorsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "authors", fmt.Sprint("authors", chunk, ".csv.gz")))
 	if err != nil {
 		log.Println(err)
@@ -123,4 +123,9 @@ func FlattenAuthors(gzipPaths iter.Seq[string], outputPath string, chunk int) {
 			}
 		}
 	}
+}
+
+var TypeAuthors = EntityType{
+	name:    "authors",
+	convert: convertAuthors,
 }

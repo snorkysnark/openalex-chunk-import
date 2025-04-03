@@ -6,11 +6,12 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 
 	"github.com/cheggaaa/pb/v3"
 
-	"github.com/snorkysnark/openalex-chunk-import/flatten"
+	"github.com/snorkysnark/openalex-chunk-import/converters"
 )
 
 func findJsonFiles(root string) ([]string, error) {
@@ -34,6 +35,13 @@ func main() {
 		flag.PrintDefaults()
 	}
 	chunksFlag := flag.Int("chunks", 8, "Number of goroutines")
+
+	entityTypesSeq := converters.EntityTypeNames
+	flag.Func("entities", "comma-separated entity types", func(s string) error {
+		entityTypesSeq = strings.SplitSeq(s, ",")
+		return nil
+	})
+
 	flag.Parse()
 
 	if flag.NArg() != 2 {
@@ -41,47 +49,59 @@ func main() {
 		os.Exit(1)
 	}
 	inputPath, outputPath := flag.Arg(0), flag.Arg(1)
-
-	jsonPaths, err := findJsonFiles(filepath.Join(inputPath, "authors"))
-	if err != nil {
-		panic(err)
-	}
-
 	numChunks := *chunksFlag
-	chunkSize := len(jsonPaths) / numChunks
-	chunkInputs := make([][]string, numChunks)
 
-	for chunk := range numChunks - 1 {
-		chunkInputs[chunk] = jsonPaths[chunk*chunkSize : (chunk+1)*chunkSize]
-	}
-	chunkInputs[numChunks-1] = jsonPaths[(numChunks-1)*chunkSize:]
-
-	pbPool, err := pb.StartPool()
-	if err != nil {
-		panic(err)
+	entityTypeMask := map[string]struct{}{}
+	for typeName := range entityTypesSeq {
+		entityTypeMask[typeName] = struct{}{}
 	}
 
-	wg := new(sync.WaitGroup)
-	for chunk, chunkInput := range chunkInputs {
-		progress := pb.New(len(chunkInput))
-		pbPool.Add(progress)
-		wg.Add(1)
+	for _, entityType := range converters.EntityTypes {
+		if _, exists := entityTypeMask[entityType.Name()]; !exists {
+			continue
+		}
+		fmt.Println("Converting", entityType.Name())
 
-		go func() {
-			defer wg.Done()
-			defer progress.Finish()
+		jsonPaths, err := findJsonFiles(filepath.Join(inputPath, entityType.Name()))
+		if err != nil {
+			panic(err)
+		}
 
-			flatten.FlattenAuthors(func(yield func(string) bool) {
-				for _, inputPath := range chunkInput {
-					if !yield(inputPath) {
-						return
+		chunkSize := len(jsonPaths) / numChunks
+		chunkInputs := make([][]string, numChunks)
+
+		for chunk := range numChunks - 1 {
+			chunkInputs[chunk] = jsonPaths[chunk*chunkSize : (chunk+1)*chunkSize]
+		}
+		chunkInputs[numChunks-1] = jsonPaths[(numChunks-1)*chunkSize:]
+
+		pbPool, err := pb.StartPool()
+		if err != nil {
+			panic(err)
+		}
+
+		wg := new(sync.WaitGroup)
+		for chunk, chunkInput := range chunkInputs {
+			progress := pb.New(len(chunkInput))
+			pbPool.Add(progress)
+			wg.Add(1)
+
+			go func() {
+				defer wg.Done()
+				defer progress.Finish()
+
+				entityType.Convert(func(yield func(string) bool) {
+					for _, inputPath := range chunkInput {
+						if !yield(inputPath) {
+							return
+						}
+						progress.Increment()
 					}
-					progress.Increment()
-				}
-			}, outputPath, chunk)
-		}()
-	}
+				}, outputPath, chunk)
+			}()
+		}
 
-	wg.Wait()
-	pbPool.Stop()
+		wg.Wait()
+		pbPool.Stop()
+	}
 }
