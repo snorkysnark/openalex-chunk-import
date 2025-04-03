@@ -1,6 +1,6 @@
 package converters
 
-var EntityTypes = []EntityType{TypeAuthors}
+var EntityTypes = []EntityType{TypeAuthors, TypeTopics}
 
 func EntityTypeNames(yield func(string) bool) {
 	for _, entityType := range EntityTypes {

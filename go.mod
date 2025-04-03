@@ -5,6 +5,7 @@ go 1.24.0
 require (
 	github.com/cheggaaa/pb/v3 v3.1.7
 	github.com/jszwec/csvutil v1.10.0
+	github.com/samber/lo v1.49.1
 )
 
 require (
@@ -15,4 +16,5 @@ require (
 	github.com/mattn/go-runewidth v0.0.16 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	golang.org/x/sys v0.30.0 // indirect
+	golang.org/x/text v0.21.0 // indirect
 )
