@@ -1,31 +1,33 @@
 package converters
 
 import (
+	"encoding/json"
 	"fmt"
-	"github.com/samber/lo"
 	"iter"
 	"log"
 	"path/filepath"
 	"strings"
+
+	"github.com/samber/lo"
 )
 
 type topicsRow struct {
-	Id                  *string  `csv:"id"`
-	DisplayName         *string  `csv:"display_name"`
-	SubfieldId          *string  `csv:"subfield_id"`
-	SubfieldDisplayName *string  `csv:"subfield_display_name"`
-	FieldId             *string  `csv:"field_id"`
-	FieldDisplayName    *string  `csv:"field_display_name"`
-	DomainId            *string  `csv:"domain_id"`
-	DomainDisplayName   *string  `csv:"domain_display_name"`
-	Description         *string  `csv:"description"`
-	Keywords            *string  `csv:"keywords"`
-	WorksApiUrl         *string  `csv:"works_api_url"`
-	WikipediaId         *string  `csv:"wikipedia_id"`
-	WorksCount          *int     `csv:"works_count"`
-	CitedByCount        *int     `csv:"cited_by_count"`
-	UpdatedDate         *string  `csv:"updated_date"`
-	Siblings            jsontype `csv:"siblings"`
+	Id                  *string      `csv:"id"`
+	DisplayName         *string      `csv:"display_name"`
+	SubfieldId          *string      `csv:"subfield_id"`
+	SubfieldDisplayName *string      `csv:"subfield_display_name"`
+	FieldId             *string      `csv:"field_id"`
+	FieldDisplayName    *string      `csv:"field_display_name"`
+	DomainId            *string      `csv:"domain_id"`
+	DomainDisplayName   *string      `csv:"domain_display_name"`
+	Description         *string      `csv:"description"`
+	Keywords            *string      `csv:"keywords"`
+	WorksApiUrl         *string      `csv:"works_api_url"`
+	WikipediaId         *string      `csv:"wikipedia_id"`
+	WorksCount          *json.Number `csv:"works_count"`
+	CitedByCount        *json.Number `csv:"cited_by_count"`
+	UpdatedDate         *string      `csv:"updated_date"`
+	Siblings            jsontype     `csv:"siblings"`
 }
 
 func getIdAndDisplayName(key string, data map[string]any) (*string, *string) {
@@ -76,7 +78,7 @@ func convertTopics(gzipPaths iter.Seq[string], outputPath string, chunk int) {
 			updatedDate = getCast[string](*updated, "date")
 		}
 
-		topicsWriter.Encode(topicsRow{
+		if err := topicsWriter.Encode(topicsRow{
 			Id:                  topicId,
 			DisplayName:         getCast[string](data, "display_name"),
 			SubfieldId:          subfieldId,
@@ -89,11 +91,13 @@ func convertTopics(gzipPaths iter.Seq[string], outputPath string, chunk int) {
 			Keywords:            keywords,
 			WorksApiUrl:         getCast[string](data, "works_api_url"),
 			WikipediaId:         wikipediaId,
-			WorksCount:          getCast[int](data, "works_count"),
-			CitedByCount:        getCast[int](data, "cited_by_count"),
+			WorksCount:          getCast[json.Number](data, "works_count"),
+			CitedByCount:        getCast[json.Number](data, "cited_by_count"),
 			UpdatedDate:         updatedDate,
 			Siblings:            jsontype{value: data["siblings"]},
-		})
+		}); err != nil {
+			log.Println(err)
+		}
 	}
 }
 

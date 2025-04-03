@@ -1,6 +1,7 @@
 package converters
 
 import (
+	"encoding/json"
 	"fmt"
 	"iter"
 	"log"
@@ -8,33 +9,33 @@ import (
 )
 
 type authorRow struct {
-	Id                      *string  `csv:"id"`
-	Orcid                   *string  `csv:"orcid"`
-	DisplayName             *string  `csv:"display_name"`
-	DisplayNameAlternatives jsontype `csv:"display_name_alternatives"`
-	WorksCount              *int     `csv:"works_count"`
-	CitedByCount            *int     `csv:"cited_by_count"`
-	LastKnownInstitution    *string  `csv:"last_known_institution"`
-	WorksApiUrl             *string  `csv:"works_api_url"`
-	UpdatedDate             *string  `csv:"updated_date"`
+	Id                      *string      `csv:"id"`
+	Orcid                   *string      `csv:"orcid"`
+	DisplayName             *string      `csv:"display_name"`
+	DisplayNameAlternatives jsontype     `csv:"display_name_alternatives"`
+	WorksCount              *json.Number `csv:"works_count"`
+	CitedByCount            *json.Number `csv:"cited_by_count"`
+	LastKnownInstitution    *string      `csv:"last_known_institution"`
+	WorksApiUrl             *string      `csv:"works_api_url"`
+	UpdatedDate             *string      `csv:"updated_date"`
 }
 
 type authorCountsByYearRow struct {
-	AuthorId     *string `csv:"author_id"`
-	Year         *int    `csv:"year"`
-	WorksCount   *int    `csv:"works_count"`
-	CitedByCount *int    `csv:"cited_by_count"`
-	OaWorksCount *int    `csv:"oa_works_count"`
+	AuthorId     *string      `csv:"author_id"`
+	Year         *json.Number `csv:"year"`
+	WorksCount   *json.Number `csv:"works_count"`
+	CitedByCount *json.Number `csv:"cited_by_count"`
+	OaWorksCount *json.Number `csv:"oa_works_count"`
 }
 
 type authorIdsRow struct {
-	AuthorId  *string `csv:"author_id"`
-	Openalex  *string `csv:"openalex"`
-	Orcid     *string `csv:"orcid"`
-	Scopus    *string `csv:"scopus"`
-	Twitter   *string `csv:"twitter"`
-	Wikipedia *string `csv:"wikipedia"`
-	Mag       *int64  `csv:"mag"`
+	AuthorId  *string      `csv:"author_id"`
+	Openalex  *string      `csv:"openalex"`
+	Orcid     *string      `csv:"orcid"`
+	Scopus    *string      `csv:"scopus"`
+	Twitter   *string      `csv:"twitter"`
+	Wikipedia *string      `csv:"wikipedia"`
+	Mag       *json.Number `csv:"mag"`
 }
 
 func convertAuthors(gzipPaths iter.Seq[string], outputPath string, chunk int) {
@@ -80,8 +81,8 @@ func convertAuthors(gzipPaths iter.Seq[string], outputPath string, chunk int) {
 			DisplayNameAlternatives: jsontype{
 				value: data["display_name_alternatives"],
 			},
-			WorksCount:           getCast[int](data, "works_count"),
-			CitedByCount:         getCast[int](data, "cited_by_count"),
+			WorksCount:           getCast[json.Number](data, "works_count"),
+			CitedByCount:         getCast[json.Number](data, "cited_by_count"),
 			LastKnownInstitution: lastKnownInstitutionId,
 			WorksApiUrl:          getCast[string](data, "works_api_url"),
 			UpdatedDate:          getCast[string](data, "updated_date"),
@@ -89,34 +90,28 @@ func convertAuthors(gzipPaths iter.Seq[string], outputPath string, chunk int) {
 			log.Println(err)
 		}
 
-		if authorIds := data["ids"]; authorIds != nil {
-			authorIds := authorIds.(map[string]any)
-
+		if authorIds := getCast[map[string]any](data, "ids"); authorIds != nil {
 			if err := authorIdsWriter.Encode(authorIdsRow{
 				AuthorId:  authorId,
-				Openalex:  getCast[string](authorIds, "openalex"),
-				Orcid:     getCast[string](authorIds, "orcid"),
-				Scopus:    getCast[string](authorIds, "scopus"),
-				Twitter:   getCast[string](authorIds, "twitter"),
-				Wikipedia: getCast[string](authorIds, "wikipedia"),
-				Mag:       getCast[int64](authorIds, "mag"),
+				Openalex:  getCast[string](*authorIds, "openalex"),
+				Orcid:     getCast[string](*authorIds, "orcid"),
+				Scopus:    getCast[string](*authorIds, "scopus"),
+				Twitter:   getCast[string](*authorIds, "twitter"),
+				Wikipedia: getCast[string](*authorIds, "wikipedia"),
+				Mag:       getCast[json.Number](*authorIds, "mag"),
 			}); err != nil {
 				log.Println(err)
 			}
 		}
 
-		if countsByYear := data["counts_by_year"]; countsByYear != nil {
-			countsByYear := countsByYear.([]any)
-
-			for _, countByYear := range countsByYear {
-				countByYear := countByYear.(map[string]any)
-
+		if countsByYear := getCast[[]any](data, "counts_by_year"); countsByYear != nil {
+			for countByYear := range iterCast[map[string]any](*countsByYear) {
 				if err := authorCountsWriter.Encode(authorCountsByYearRow{
 					AuthorId:     authorId,
-					Year:         getCast[int](countByYear, "year"),
-					WorksCount:   getCast[int](countByYear, "works_count"),
-					CitedByCount: getCast[int](countByYear, "cited_by_count"),
-					OaWorksCount: getCast[int](countByYear, "oa_works_count"),
+					Year:         getCast[json.Number](*countByYear, "year"),
+					WorksCount:   getCast[json.Number](*countByYear, "works_count"),
+					CitedByCount: getCast[json.Number](*countByYear, "cited_by_count"),
+					OaWorksCount: getCast[json.Number](*countByYear, "oa_works_count"),
 				}); err != nil {
 					log.Println(err)
 				}

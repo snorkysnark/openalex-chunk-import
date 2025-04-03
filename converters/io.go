@@ -2,6 +2,7 @@ package converters
 
 import (
 	"bufio"
+	"bytes"
 	"compress/gzip"
 	"encoding/csv"
 	"encoding/json"
@@ -30,8 +31,11 @@ func ReadJsonLines(gzipPath string) (iter.Seq2[map[string]any, error], error) {
 		defer gzReader.Close()
 
 		for scanner.Scan() {
+			decoder := json.NewDecoder(bytes.NewReader(scanner.Bytes()))
+			decoder.UseNumber()
+
 			var data map[string]any
-			err := json.Unmarshal(scanner.Bytes(), &data)
+			err := decoder.Decode(&data)
 
 			if !yield(data, err) {
 				return
