@@ -58,13 +58,21 @@ func ReadJsonLinesAll(gzipPaths iter.Seq[string]) iter.Seq2[map[string]any, erro
 
 type CsvWriterEncoder struct {
 	file    *os.File
+	archive *gzip.Writer
 	writer  *csv.Writer
 	encoder *csvutil.Encoder
 }
 
 func (csv *CsvWriterEncoder) Close() error {
 	csv.writer.Flush()
-	return csv.file.Close()
+
+	if err := csv.archive.Close(); err != nil {
+		return err
+	}
+	if err := csv.file.Close(); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (csv *CsvWriterEncoder) Encode(v any) error {
@@ -82,7 +90,9 @@ func OpenCsvEncoder(path string) (*CsvWriterEncoder, error) {
 		return nil, err
 	}
 
-	writer := csv.NewWriter(file)
+	archive := gzip.NewWriter(file)
+	writer := csv.NewWriter(archive)
 	encoder := csvutil.NewEncoder(writer)
-	return &CsvWriterEncoder{file, writer, encoder}, nil
+
+	return &CsvWriterEncoder{file, archive, writer, encoder}, nil
 }

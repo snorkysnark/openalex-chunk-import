@@ -38,19 +38,19 @@ type authorIdsRow struct {
 }
 
 func FlattenAuthors(gzipPaths iter.Seq[string], outputPath string, chunk int) {
-	authorsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "authors", fmt.Sprint("authors", chunk, ".csv")))
+	authorsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "authors", fmt.Sprint("authors", chunk, ".csv.gz")))
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	defer authorsWriter.Close()
-	authorCountsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "authors", fmt.Sprint("author_counts", chunk, ".csv")))
+	authorCountsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "authors", fmt.Sprint("author_counts", chunk, ".csv.gz")))
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	defer authorCountsWriter.Close()
-	authorIdsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "authors", fmt.Sprint("author_ids", chunk, ".csv")))
+	authorIdsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "authors", fmt.Sprint("author_ids", chunk, ".csv.gz")))
 	if err != nil {
 		log.Println(err)
 		return
