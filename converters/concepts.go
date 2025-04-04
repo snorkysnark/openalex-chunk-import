@@ -52,31 +52,31 @@ type conceptsRelatedConceptsRow struct {
 }
 
 func convertConcepts(gzipPaths iter.Seq[string], outputPath string, chunk int) {
-	conceptsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "concepts", fmt.Sprint("concepts", chunk, ".csv.gz")))
+	conceptsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "concepts", fmt.Sprint("concepts", chunk, ".csv.gz")), conceptsRow{})
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	defer conceptsWriter.Close()
-	conceptsAncestorsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "concepts", fmt.Sprint("concepts_ancestors", chunk, ".csv.gz")))
+	conceptsAncestorsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "concepts", fmt.Sprint("concepts_ancestors", chunk, ".csv.gz")), conceptsAncestorsRow{})
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	defer conceptsAncestorsWriter.Close()
-	conceptsCountsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "concepts", fmt.Sprint("concepts_counts", chunk, ".csv.gz")))
+	conceptsCountsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "concepts", fmt.Sprint("concepts_counts", chunk, ".csv.gz")), conceptsCountsByYearRow{})
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	defer conceptsCountsWriter.Close()
-	conceptsIdsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "concepts", fmt.Sprint("concepts_ids", chunk, ".csv.gz")))
+	conceptsIdsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "concepts", fmt.Sprint("concepts_ids", chunk, ".csv.gz")), conceptsIdsRow{})
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	defer conceptsIdsWriter.Close()
-	conceptsRelatedConceptsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "concepts", fmt.Sprint("concepts_related_concepts", chunk, ".csv.gz")))
+	conceptsRelatedConceptsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "concepts", fmt.Sprint("concepts_related_concepts", chunk, ".csv.gz")), conceptsRelatedConceptsRow{})
 	if err != nil {
 		log.Println(err)
 		return

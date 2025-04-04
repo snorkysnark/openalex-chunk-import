@@ -38,7 +38,7 @@ func getIdAndDisplayName(key string, data map[string]any) (*string, *string) {
 }
 
 func convertTopics(gzipPaths iter.Seq[string], outputPath string, chunk int) {
-	topicsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "topics", fmt.Sprint("topics", chunk, ".csv.gz")))
+	topicsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "topics", fmt.Sprint("topics", chunk, ".csv.gz")), topicsRow{})
 	if err != nil {
 		log.Println(err)
 		return

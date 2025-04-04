@@ -42,19 +42,19 @@ type sourcesIdsRow struct {
 }
 
 func convertSources(gzipPaths iter.Seq[string], outputPath string, chunk int) {
-	sourcesWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "sources", fmt.Sprint("sources", chunk, ".csv.gz")))
+	sourcesWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "sources", fmt.Sprint("sources", chunk, ".csv.gz")), sourcesRow{})
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	defer sourcesWriter.Close()
-	sourcesCountsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "sources", fmt.Sprint("sources_counts", chunk, ".csv.gz")))
+	sourcesCountsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "sources", fmt.Sprint("sources_counts", chunk, ".csv.gz")), sourcesCountsByYearRow{})
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	defer sourcesCountsWriter.Close()
-	sourcesIdsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "sources", fmt.Sprint("sources_ids", chunk, ".csv.gz")))
+	sourcesIdsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "sources", fmt.Sprint("sources_ids", chunk, ".csv.gz")), sourcesIdsRow{})
 	if err != nil {
 		log.Println(err)
 		return

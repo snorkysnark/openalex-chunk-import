@@ -61,31 +61,31 @@ type institutionsIdsRow struct {
 }
 
 func convertInstitutions(gzipPaths iter.Seq[string], outputPath string, chunk int) {
-	institutionsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "institutions", fmt.Sprint("institutions", chunk, ".csv.gz")))
+	institutionsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "institutions", fmt.Sprint("institutions", chunk, ".csv.gz")), institutionsRow{})
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	defer institutionsWriter.Close()
-	institutionsAssociatedInstitutionsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "institutions", fmt.Sprint("institutions_associated_institutions", chunk, ".csv.gz")))
+	institutionsAssociatedInstitutionsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "institutions", fmt.Sprint("institutions_associated_institutions", chunk, ".csv.gz")), institutionsAssociatedInstitutionsRow{})
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	defer institutionsAssociatedInstitutionsWriter.Close()
-	institutionsCountsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "institutions", fmt.Sprint("institutions_counts", chunk, ".csv.gz")))
+	institutionsCountsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "institutions", fmt.Sprint("institutions_counts", chunk, ".csv.gz")), institutionsCountsByYearRow{})
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	defer institutionsCountsWriter.Close()
-	institutionsGeoWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "institutions", fmt.Sprint("institutions_geo", chunk, ".csv.gz")))
+	institutionsGeoWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "institutions", fmt.Sprint("institutions_geo", chunk, ".csv.gz")), institutionsGeoRow{})
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	defer institutionsGeoWriter.Close()
-	institutionsIdsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "institutions", fmt.Sprint("institutions_ids", chunk, ".csv.gz")))
+	institutionsIdsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "institutions", fmt.Sprint("institutions_ids", chunk, ".csv.gz")), institutionsIdsRow{})
 	if err != nil {
 		log.Println(err)
 		return

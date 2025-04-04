@@ -83,7 +83,7 @@ func (csv *CsvWriterEncoder) Encode(v any) error {
 	return csv.encoder.Encode(v)
 }
 
-func OpenCsvEncoder(path string) (*CsvWriterEncoder, error) {
+func OpenCsvEncoder(path string, schema any) (*CsvWriterEncoder, error) {
 	err := os.MkdirAll(filepath.Dir(path), 0755)
 	if err != nil {
 		return nil, err
@@ -97,6 +97,10 @@ func OpenCsvEncoder(path string) (*CsvWriterEncoder, error) {
 	archive := gzip.NewWriter(file)
 	writer := csv.NewWriter(archive)
 	encoder := csvutil.NewEncoder(writer)
+
+	if err := encoder.EncodeHeader(schema); err != nil {
+		return nil, err
+	}
 
 	return &CsvWriterEncoder{file, archive, writer, encoder}, nil
 }

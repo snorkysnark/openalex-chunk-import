@@ -37,19 +37,19 @@ type publishersIdsRow struct {
 }
 
 func convertPublishers(gzipPaths iter.Seq[string], outputPath string, chunk int) {
-	publishersWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "publishers", fmt.Sprint("publishers", chunk, ".csv.gz")))
+	publishersWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "publishers", fmt.Sprint("publishers", chunk, ".csv.gz")), publisherRow{})
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	defer publishersWriter.Close()
-	publishersCountsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "publishers", fmt.Sprint("publishers_counts", chunk, ".csv.gz")))
+	publishersCountsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "publishers", fmt.Sprint("publishers_counts", chunk, ".csv.gz")), publishersCountsByYearRow{})
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	defer publishersCountsWriter.Close()
-	publishersIdsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "publishers", fmt.Sprint("publishers_ids", chunk, ".csv.gz")))
+	publishersIdsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "publishers", fmt.Sprint("publishers_ids", chunk, ".csv.gz")), publishersIdsRow{})
 	if err != nil {
 		log.Println(err)
 		return

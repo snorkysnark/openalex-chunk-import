@@ -119,79 +119,79 @@ type worksRelatedWorksRow struct {
 }
 
 func convertWorks(gzipPaths iter.Seq[string], outputPath string, chunk int) {
-	worksWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "works", fmt.Sprint("works", chunk, ".csv.gz")))
+	worksWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "works", fmt.Sprint("works", chunk, ".csv.gz")), worksRow{})
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	defer worksWriter.Close()
-	worksPrimaryLocationsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "works", fmt.Sprint("works_primary_locations", chunk, ".csv.gz")))
+	worksPrimaryLocationsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "works", fmt.Sprint("works_primary_locations", chunk, ".csv.gz")), worksPrimaryLocationsRow{})
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	defer worksPrimaryLocationsWriter.Close()
-	worksLocationsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "works", fmt.Sprint("works_locations", chunk, ".csv.gz")))
+	worksLocationsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "works", fmt.Sprint("works_locations", chunk, ".csv.gz")), worksLocationsRow{})
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	defer worksLocationsWriter.Close()
-	worksBestOaLocationsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "works", fmt.Sprint("works_best_oa_locations", chunk, ".csv.gz")))
+	worksBestOaLocationsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "works", fmt.Sprint("works_best_oa_locations", chunk, ".csv.gz")), worksBestOaLocationsRow{})
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	defer worksBestOaLocationsWriter.Close()
-	worksAuthorshipsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "works", fmt.Sprint("works_authorships", chunk, ".csv.gz")))
+	worksAuthorshipsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "works", fmt.Sprint("works_authorships", chunk, ".csv.gz")), worksAuthorshipsRow{})
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	defer worksAuthorshipsWriter.Close()
-	worksBiblioWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "works", fmt.Sprint("works_biblio", chunk, ".csv.gz")))
+	worksBiblioWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "works", fmt.Sprint("works_biblio", chunk, ".csv.gz")), worksBiblioRow{})
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	defer worksBiblioWriter.Close()
-	worksTopicsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "works", fmt.Sprint("works_topics", chunk, ".csv.gz")))
+	worksTopicsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "works", fmt.Sprint("works_topics", chunk, ".csv.gz")), worksTopicsRow{})
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	defer worksTopicsWriter.Close()
-	worksConceptsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "works", fmt.Sprint("works_concepts", chunk, ".csv.gz")))
+	worksConceptsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "works", fmt.Sprint("works_concepts", chunk, ".csv.gz")), worksConceptsRow{})
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	defer worksConceptsWriter.Close()
-	worksIdsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "works", fmt.Sprint("works_ids", chunk, ".csv.gz")))
+	worksIdsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "works", fmt.Sprint("works_ids", chunk, ".csv.gz")), worksIdsRow{})
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	defer worksIdsWriter.Close()
-	worksMeshWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "works", fmt.Sprint("works_mesh", chunk, ".csv.gz")))
+	worksMeshWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "works", fmt.Sprint("works_mesh", chunk, ".csv.gz")), worksMeshRow{})
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	defer worksMeshWriter.Close()
-	worksOpenAccessWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "works", fmt.Sprint("works_open_access", chunk, ".csv.gz")))
+	worksOpenAccessWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "works", fmt.Sprint("works_open_access", chunk, ".csv.gz")), worksOpenAccessRow{})
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	defer worksOpenAccessWriter.Close()
-	worksReferencedWorksWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "works", fmt.Sprint("works_referenced_works", chunk, ".csv.gz")))
+	worksReferencedWorksWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "works", fmt.Sprint("works_referenced_works", chunk, ".csv.gz")), worksReferencedWorksRow{})
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	defer worksReferencedWorksWriter.Close()
-	worksRelatedWorksWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "works", fmt.Sprint("works_related_works", chunk, ".csv.gz")))
+	worksRelatedWorksWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "works", fmt.Sprint("works_related_works", chunk, ".csv.gz")), worksRelatedWorksRow{})
 	if err != nil {
 		log.Println(err)
 		return
