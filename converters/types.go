@@ -22,10 +22,6 @@ func tryCast[T any](value any) *T {
 	}
 }
 
-func notNil[T any](value *T) bool {
-	return value != nil
-}
-
 func getCast[T any](m map[string]any, key string) *T {
 	valAny, exists := m[key]
 	if !exists {
@@ -44,4 +40,17 @@ func iterCast[T any](arr []any) iter.Seq[*T] {
 			}
 		}
 	}
+}
+
+func getCastAt[T any](m map[string]any, path []string) *T {
+	var current any = m
+	for _, key := range path {
+		currentMap, ok := current.(map[string]any)
+		if !ok {
+			return nil
+		}
+		current = currentMap[key]
+	}
+
+	return tryCast[T](current)
 }
