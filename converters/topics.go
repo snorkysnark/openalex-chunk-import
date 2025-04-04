@@ -3,6 +3,7 @@ package converters
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"iter"
 	"log"
 	"path/filepath"
@@ -102,6 +103,11 @@ func convertTopics(gzipPaths iter.Seq[string], outputPath string, chunk int) {
 }
 
 var TypeTopics = EntityType{
-	name:    "topics",
-	convert: convertTopics,
+	Name:    "topics",
+	Convert: convertTopics,
+	WriteSqlImport: func(w io.Writer, outputPath string, numChunks int) {
+		basePath := filepath.Join(outputPath, "topics")
+
+		writeDuckdbCopy(w, topicsRow{}, "topics", basePath, numChunks)
+	},
 }

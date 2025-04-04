@@ -3,6 +3,7 @@ package converters
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"iter"
 	"log"
 	"path/filepath"
@@ -45,13 +46,13 @@ func convertAuthors(gzipPaths iter.Seq[string], outputPath string, chunk int) {
 		return
 	}
 	defer authorsWriter.Close()
-	authorCountsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "authors", fmt.Sprint("author_counts", chunk, ".csv.gz")), authorCountsByYearRow{})
+	authorCountsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "authors", fmt.Sprint("authors_counts_by_year", chunk, ".csv.gz")), authorCountsByYearRow{})
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	defer authorCountsWriter.Close()
-	authorIdsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "authors", fmt.Sprint("author_ids", chunk, ".csv.gz")), authorIdsRow{})
+	authorIdsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "authors", fmt.Sprint("authors_ids", chunk, ".csv.gz")), authorIdsRow{})
 	if err != nil {
 		log.Println(err)
 		return
@@ -121,6 +122,13 @@ func convertAuthors(gzipPaths iter.Seq[string], outputPath string, chunk int) {
 }
 
 var TypeAuthors = EntityType{
-	name:    "authors",
-	convert: convertAuthors,
+	Name:    "authors",
+	Convert: convertAuthors,
+	WriteSqlImport: func(w io.Writer, outputPath string, numChunks int) {
+		basePath := filepath.Join(outputPath, "authors")
+
+		writeDuckdbCopy(w, authorRow{}, "authors", basePath, numChunks)
+		writeDuckdbCopy(w, authorCountsByYearRow{}, "authors_counts_by_year", basePath, numChunks)
+		writeDuckdbCopy(w, authorIdsRow{}, "authors_ids", basePath, numChunks)
+	},
 }

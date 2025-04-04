@@ -14,6 +14,25 @@ import (
 	"github.com/snorkysnark/openalex-chunk-import/converters"
 )
 
+func writeImportScript(outputPath string, numChunks int) error {
+	if err := os.MkdirAll(filepath.Dir(outputPath), 0755); err != nil {
+		return err
+	}
+
+	f, err := os.Create(filepath.Join(outputPath, "duckdb_import.sql"))
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	for _, entityType := range converters.EntityTypes {
+		fmt.Fprintf(f, "--%v\n", entityType.Name)
+		entityType.WriteSqlImport(f, outputPath, numChunks)
+		fmt.Fprintln(f)
+	}
+	return nil
+}
+
 func findJsonFiles(root string) ([]string, error) {
 	var jsonPaths []string
 
@@ -57,13 +76,18 @@ func main() {
 		entityTypeMask[typeName] = struct{}{}
 	}
 
+	fmt.Println("Writing import script")
+	if err := writeImportScript(outputPath, numChunks); err != nil {
+		panic(err)
+	}
+
 	for _, entityType := range converters.EntityTypes {
-		if _, exists := entityTypeMask[entityType.Name()]; !exists {
+		if _, exists := entityTypeMask[entityType.Name]; !exists {
 			continue
 		}
-		fmt.Println("Converting", entityType.Name())
+		fmt.Println("Converting", entityType.Name)
 
-		jsonPaths, err := findJsonFiles(filepath.Join(inputPath, entityType.Name()))
+		jsonPaths, err := findJsonFiles(filepath.Join(inputPath, entityType.Name))
 		if err != nil {
 			panic(err)
 		}

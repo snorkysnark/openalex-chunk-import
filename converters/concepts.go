@@ -3,6 +3,7 @@ package converters
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"iter"
 	"log"
 	"path/filepath"
@@ -64,7 +65,7 @@ func convertConcepts(gzipPaths iter.Seq[string], outputPath string, chunk int) {
 		return
 	}
 	defer conceptsAncestorsWriter.Close()
-	conceptsCountsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "concepts", fmt.Sprint("concepts_counts", chunk, ".csv.gz")), conceptsCountsByYearRow{})
+	conceptsCountsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "concepts", fmt.Sprint("concepts_counts_by_year", chunk, ".csv.gz")), conceptsCountsByYearRow{})
 	if err != nil {
 		log.Println(err)
 		return
@@ -168,6 +169,15 @@ func convertConcepts(gzipPaths iter.Seq[string], outputPath string, chunk int) {
 }
 
 var TypeConcepts = EntityType{
-	name:    "concepts",
-	convert: convertConcepts,
+	Name:    "concepts",
+	Convert: convertConcepts,
+	WriteSqlImport: func(w io.Writer, outputPath string, numChunks int) {
+		basePath := filepath.Join(outputPath, "concepts")
+
+		writeDuckdbCopy(w, conceptsRow{}, "concepts", basePath, numChunks)
+		writeDuckdbCopy(w, conceptsAncestorsRow{}, "concepts_ancestors", basePath, numChunks)
+		writeDuckdbCopy(w, conceptsCountsByYearRow{}, "concepts_counts_by_year", basePath, numChunks)
+		writeDuckdbCopy(w, conceptsIdsRow{}, "concepts_ids", basePath, numChunks)
+		writeDuckdbCopy(w, conceptsRelatedConceptsRow{}, "concepts_related_concepts", basePath, numChunks)
+	},
 }

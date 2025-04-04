@@ -3,6 +3,7 @@ package converters
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"iter"
 	"log"
 	"path/filepath"
@@ -48,7 +49,7 @@ func convertSources(gzipPaths iter.Seq[string], outputPath string, chunk int) {
 		return
 	}
 	defer sourcesWriter.Close()
-	sourcesCountsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "sources", fmt.Sprint("sources_counts", chunk, ".csv.gz")), sourcesCountsByYearRow{})
+	sourcesCountsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "sources", fmt.Sprint("sources_counts_by_year", chunk, ".csv.gz")), sourcesCountsByYearRow{})
 	if err != nil {
 		log.Println(err)
 		return
@@ -120,6 +121,13 @@ func convertSources(gzipPaths iter.Seq[string], outputPath string, chunk int) {
 }
 
 var TypeSources = EntityType{
-	name:    "sources",
-	convert: convertSources,
+	Name:    "sources",
+	Convert: convertSources,
+	WriteSqlImport: func(w io.Writer, outputPath string, numChunks int) {
+		basePath := filepath.Join(outputPath, "sources")
+
+		writeDuckdbCopy(w, sourcesRow{}, "sources", basePath, numChunks)
+		writeDuckdbCopy(w, sourcesCountsByYearRow{}, "sources_counts_by_year", basePath, numChunks)
+		writeDuckdbCopy(w, sourcesIdsRow{}, "sources_ids", basePath, numChunks)
+	},
 }

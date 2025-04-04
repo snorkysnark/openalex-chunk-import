@@ -3,6 +3,7 @@ package converters
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"iter"
 	"log"
 	"path/filepath"
@@ -413,6 +414,21 @@ func convertWorks(gzipPaths iter.Seq[string], outputPath string, chunk int) {
 }
 
 var TypeWorks = EntityType{
-	name:    "works",
-	convert: convertWorks,
+	Name:    "works",
+	Convert: convertWorks,
+	WriteSqlImport: func(w io.Writer, outputPath string, numChunks int) {
+		basePath := filepath.Join(outputPath, "works")
+
+		writeDuckdbCopy(w, worksRow{}, "works", basePath, numChunks)
+		writeDuckdbCopy(w, worksPrimaryLocationsRow{}, "works_primary_locations", basePath, numChunks)
+		writeDuckdbCopy(w, worksLocationsRow{}, "works_locations", basePath, numChunks)
+		writeDuckdbCopy(w, worksBestOaLocationsRow{}, "works_best_oa_locations", basePath, numChunks)
+		writeDuckdbCopy(w, worksAuthorshipsRow{}, "works_authorships", basePath, numChunks)
+		writeDuckdbCopy(w, worksBiblioRow{}, "works_biblio", basePath, numChunks)
+		writeDuckdbCopy(w, worksTopicsRow{}, "works_topics", basePath, numChunks)
+		writeDuckdbCopy(w, worksConceptsRow{}, "works_concepts", basePath, numChunks)
+		writeDuckdbCopy(w, worksIdsRow{}, "works_ids", basePath, numChunks)
+		writeDuckdbCopy(w, worksMeshRow{}, "works_mesh", basePath, numChunks)
+		writeDuckdbCopy(w, worksOpenAccessRow{}, "works_open_access", basePath, numChunks)
+	},
 }

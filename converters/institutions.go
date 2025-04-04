@@ -3,6 +3,7 @@ package converters
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"iter"
 	"log"
 	"path/filepath"
@@ -73,7 +74,7 @@ func convertInstitutions(gzipPaths iter.Seq[string], outputPath string, chunk in
 		return
 	}
 	defer institutionsAssociatedInstitutionsWriter.Close()
-	institutionsCountsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "institutions", fmt.Sprint("institutions_counts", chunk, ".csv.gz")), institutionsCountsByYearRow{})
+	institutionsCountsWriter, err := OpenCsvEncoder(filepath.Join(outputPath, "institutions", fmt.Sprint("institutions_counts_by_year", chunk, ".csv.gz")), institutionsCountsByYearRow{})
 	if err != nil {
 		log.Println(err)
 		return
@@ -182,6 +183,15 @@ func convertInstitutions(gzipPaths iter.Seq[string], outputPath string, chunk in
 }
 
 var TypeInstitutions = EntityType{
-	name:    "institutions",
-	convert: convertInstitutions,
+	Name:    "institutions",
+	Convert: convertInstitutions,
+	WriteSqlImport: func(w io.Writer, outputPath string, numChunks int) {
+		basePath := filepath.Join(outputPath, "institutions")
+
+		writeDuckdbCopy(w, institutionsRow{}, "institutions", basePath, numChunks)
+		writeDuckdbCopy(w, institutionsAssociatedInstitutionsRow{}, "institutions_associated_institutions", basePath, numChunks)
+		writeDuckdbCopy(w, institutionsCountsByYearRow{}, "institutions_counts_by_year", basePath, numChunks)
+		writeDuckdbCopy(w, institutionsGeoRow{}, "institutions_geo", basePath, numChunks)
+		writeDuckdbCopy(w, institutionsIdsRow{}, "institutions_ids", basePath, numChunks)
+	},
 }
