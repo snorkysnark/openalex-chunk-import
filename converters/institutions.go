@@ -9,56 +9,108 @@ import (
 	"path/filepath"
 )
 
+// CREATE TABLE openalex.institutions (
+//     id text NOT NULL,
+//     ror text,
+//     display_name text,
+//     country_code text,
+//     type text,
+//     homepage_url text,
+//     image_url text,
+//     image_thumbnail_url text,
+//     display_name_acronyms json,
+//     display_name_alternatives json,
+//     works_count integer,
+//     cited_by_count integer,
+//     works_api_url text,
+//     updated_date timestamp without time zone
+// );
+
 type institutionsRow struct {
-	Id                      *string      `csv:"id"`
-	Ror                     *string      `csv:"ror"`
-	DisplayName             *string      `csv:"display_name"`
-	CountryCode             *string      `csv:"country_code"`
-	Type                    *string      `csv:"type"`
-	HomepageUrl             *string      `csv:"homepage_url"`
-	ImageUrl                *string      `csv:"image_url"`
-	ImageThumbnailUrl       *string      `csv:"image_thumbnail_url"`
-	DisplayNameAcronyms     jsontype     `csv:"display_name_acronyms"`
-	DisplayNameAlternatives jsontype     `csv:"display_name_alternatives"`
-	WorksCount              *json.Number `csv:"works_count"`
-	CitedByCount            *json.Number `csv:"cited_by_count"`
-	WorksApiUrl             *string      `csv:"works_api_url"`
-	UpdatedDate             *string      `csv:"updated_date"`
+	Id                      *string      `csv:"id" sqltype:"TEXT"`
+	Ror                     *string      `csv:"ror" sqltype:"TEXT"`
+	DisplayName             *string      `csv:"display_name" sqltype:"TEXT"`
+	CountryCode             *string      `csv:"country_code" sqltype:"TEXT"`
+	Type                    *string      `csv:"type" sqltype:"TEXT"`
+	HomepageUrl             *string      `csv:"homepage_url" sqltype:"TEXT"`
+	ImageUrl                *string      `csv:"image_url" sqltype:"TEXT"`
+	ImageThumbnailUrl       *string      `csv:"image_thumbnail_url" sqltype:"TEXT"`
+	DisplayNameAcronyms     jsontype     `csv:"display_name_acronyms" sqltype:"JSON"`
+	DisplayNameAlternatives jsontype     `csv:"display_name_alternatives" sqltype:"JSON"`
+	WorksCount              *json.Number `csv:"works_count" sqltype:"INTEGER"`
+	CitedByCount            *json.Number `csv:"cited_by_count" sqltype:"INTEGER"`
+	WorksApiUrl             *string      `csv:"works_api_url" sqltype:"TEXT"`
+	UpdatedDate             *string      `csv:"updated_date" sqltype:"TIMESTAMP"`
 }
+
+// CREATE TABLE openalex.institutions_associated_institutions (
+//     institution_id text,
+//     associated_institution_id text,
+//     relationship text
+// );
 
 type institutionsAssociatedInstitutionsRow struct {
-	InstitutionId           *string `csv:"institution_id"`
-	AssociatedInstitutionId *string `csv:"associated_institution_id"`
-	Relationship            *string `csv:"relationship"`
+	InstitutionId           *string `csv:"institution_id" sqltype:"TEXT"`
+	AssociatedInstitutionId *string `csv:"associated_institution_id" sqltype:"TEXT"`
+	Relationship            *string `csv:"relationship" sqltype:"TEXT"`
 }
+
+// CREATE TABLE openalex.institutions_counts_by_year (
+//     institution_id text NOT NULL,
+//     year integer NOT NULL,
+//     works_count integer,
+//     cited_by_count integer,
+//     oa_works_count integer
+// );
 
 type institutionsCountsByYearRow struct {
-	InstitutionId *string      `csv:"institution_id"`
-	Year          *json.Number `csv:"year"`
-	WorksCount    *json.Number `csv:"works_count"`
-	CitedByCount  *json.Number `csv:"cited_by_count"`
-	OaWorksCount  *json.Number `csv:"oa_works_count"`
+	InstitutionId *string      `csv:"institution_id" sqltype:"TEXT"`
+	Year          *json.Number `csv:"year" sqltype:"INTEGER"`
+	WorksCount    *json.Number `csv:"works_count" sqltype:"INTEGER"`
+	CitedByCount  *json.Number `csv:"cited_by_count" sqltype:"INTEGER"`
+	OaWorksCount  *json.Number `csv:"oa_works_count" sqltype:"INTEGER"`
 }
+
+// CREATE TABLE openalex.institutions_geo (
+//     institution_id text NOT NULL,
+//     city text,
+//     geonames_city_id text,
+//     region text,
+//     country_code text,
+//     country text,
+//     latitude real,
+//     longitude real
+// );
 
 type institutionsGeoRow struct {
-	InstitutionId  *string      `csv:"institution_id"`
-	City           *string      `csv:"city"`
-	GeonamesCityId *string      `csv:"geonames_city_id"`
-	Region         *string      `csv:"region"`
-	CountryCode    *string      `csv:"country_code"`
-	Country        *string      `csv:"country"`
-	Latitude       *json.Number `csv:"latitude"`
-	Longitude      *json.Number `csv:"longitude"`
+	InstitutionId  *string      `csv:"institution_id" sqltype:"TEXT"`
+	City           *string      `csv:"city" sqltype:"TEXT"`
+	GeonamesCityId *string      `csv:"geonames_city_id" sqltype:"TEXT"`
+	Region         *string      `csv:"region" sqltype:"TEXT"`
+	CountryCode    *string      `csv:"country_code" sqltype:"TEXT"`
+	Country        *string      `csv:"country" sqltype:"TEXT"`
+	Latitude       *json.Number `csv:"latitude" sqltype:"REAL"`
+	Longitude      *json.Number `csv:"longitude" sqltype:"REAL"`
 }
 
+// CREATE TABLE openalex.institutions_ids (
+//     institution_id text NOT NULL,
+//     openalex text,
+//     ror text,
+//     grid text,
+//     wikipedia text,
+//     wikidata text,
+//     mag bigint
+// );
+
 type institutionsIdsRow struct {
-	InstitutionId *string      `csv:"institution_id"`
-	Openalex      *string      `csv:"openalex"`
-	Ror           *string      `csv:"ror"`
-	Grid          *string      `csv:"grid"`
-	Wikipedia     *string      `csv:"wikipedia"`
-	Wikidata      *string      `csv:"wikidata"`
-	Mag           *json.Number `csv:"mag"`
+	InstitutionId *string      `csv:"institution_id" sqltype:"TEXT"`
+	Openalex      *string      `csv:"openalex" sqltype:"TEXT"`
+	Ror           *string      `csv:"ror" sqltype:"TEXT"`
+	Grid          *string      `csv:"grid" sqltype:"TEXT"`
+	Wikipedia     *string      `csv:"wikipedia" sqltype:"TEXT"`
+	Wikidata      *string      `csv:"wikidata" sqltype:"TEXT"`
+	Mag           *json.Number `csv:"mag" sqltype:"BIGINT"`
 }
 
 func convertInstitutions(gzipPaths iter.Seq[string], outputPath string, chunk int) {

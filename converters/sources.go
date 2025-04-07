@@ -9,37 +9,70 @@ import (
 	"path/filepath"
 )
 
+// CREATE TABLE openalex.sources (
+//     id text NOT NULL,
+//     issn_l text,
+//     issn json,
+//     display_name text,
+//     publisher text,
+//     works_count integer,
+//     cited_by_count integer,
+//     is_oa boolean,
+//     is_in_doaj boolean,
+//     homepage_url text,
+//     works_api_url text,
+//     updated_date timestamp without time zone
+// );
+
 type sourcesRow struct {
-	Id           *string      `csv:"id"`
-	IssnL        *string      `csv:"issn_l"`
-	Issn         jsontype     `csv:"issn"`
-	DisplayName  *string      `csv:"display_name"`
-	Publisher    *string      `csv:"publisher"`
-	WorksCount   *json.Number `csv:"works_count"`
-	CitedByCount *json.Number `csv:"cited_by_count"`
-	IsOa         *bool        `csv:"is_oa"`
-	IsInDoaj     *bool        `csv:"is_in_doaj"`
-	HomepageUrl  *string      `csv:"homepage_url"`
-	WorksApiUrl  *string      `csv:"works_api_url"`
-	UpdatedDate  *string      `csv:"updated_date"`
+	Id           *string      `csv:"id" sqltype:"TEXT"`
+	IssnL        *string      `csv:"issn_l" sqltype:"TEXT"`
+	Issn         jsontype     `csv:"issn" sqltype:"JSON"`
+	DisplayName  *string      `csv:"display_name" sqltype:"TEXT"`
+	Publisher    *string      `csv:"publisher" sqltype:"TEXT"`
+	WorksCount   *json.Number `csv:"works_count" sqltype:"INTEGER"`
+	CitedByCount *json.Number `csv:"cited_by_count" sqltype:"INTEGER"`
+	IsOa         *bool        `csv:"is_oa" sqltype:"BOOLEAN"`
+	IsInDoaj     *bool        `csv:"is_in_doaj" sqltype:"BOOLEAN"`
+	HomepageUrl  *string      `csv:"homepage_url" sqltype:"TEXT"`
+	WorksApiUrl  *string      `csv:"works_api_url" sqltype:"TEXT"`
+	UpdatedDate  *string      `csv:"updated_date" sqltype:"TIMESTAMP"`
 }
+
+// CREATE TABLE openalex.sources_counts_by_year (
+//     source_id text NOT NULL,
+//     year integer NOT NULL,
+//     works_count integer,
+//     cited_by_count integer,
+//     oa_works_count integer
+// );
 
 type sourcesCountsByYearRow struct {
-	SourceId     *string      `csv:"source_id"`
-	Year         *json.Number `csv:"year"`
-	WorksCount   *json.Number `csv:"works_count"`
-	CitedByCount *json.Number `csv:"cited_by_count"`
-	OaWorksCount *json.Number `csv:"oa_works_count"`
+	SourceId     *string      `csv:"source_id" sqltype:"TEXT"`
+	Year         *json.Number `csv:"year" sqltype:"INTEGER"`
+	WorksCount   *json.Number `csv:"works_count" sqtype:"INTEGER"`
+	CitedByCount *json.Number `csv:"cited_by_count" sqltype:"INTEGER"`
+	OaWorksCount *json.Number `csv:"oa_works_count" sqltype:"INTEGER"`
 }
 
+// CREATE TABLE openalex.sources_ids (
+//     source_id text,
+//     openalex text,
+//     issn_l text,
+//     issn json,
+//     mag bigint,
+//     wikidata text,
+//     fatcat text
+// );
+
 type sourcesIdsRow struct {
-	SourceId *string      `csv:"source_id"`
-	Openalex *string      `csv:"openalex"`
-	IssnL    *string      `csv:"issn_l"`
-	Issn     jsontype     `csv:"issn"`
-	Mag      *json.Number `csv:"mag"`
-	Wikidata *string      `csv:"wikidata"`
-	Fatcat   *string      `csv:"fatcat"`
+	SourceId *string      `csv:"source_id" sqltype:"TEXT"`
+	Openalex *string      `csv:"openalex" sqltype:"TEXT"`
+	IssnL    *string      `csv:"issn_l" sqltype:"TEXT"`
+	Issn     jsontype     `csv:"issn" sqltype:"JSON"`
+	Mag      *json.Number `csv:"mag" sqltype:"BIGINT"`
+	Wikidata *string      `csv:"wikidata" sqltype:"TEXT"`
+	Fatcat   *string      `csv:"fatcat" sqltype:"TEXT"`
 }
 
 func convertSources(gzipPaths iter.Seq[string], outputPath string, chunk int) {

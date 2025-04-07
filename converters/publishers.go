@@ -9,32 +9,60 @@ import (
 	"path/filepath"
 )
 
+// CREATE TABLE openalex.publishers (
+//     id text NOT NULL,
+//     display_name text,
+//     alternate_titles json,
+//     country_codes json,
+//     hierarchy_level integer,
+//     parent_publisher text,
+//     works_count integer,
+//     cited_by_count integer,
+//     sources_api_url text,
+//     updated_date timestamp without time zone
+// );
+
 type publisherRow struct {
-	Id              *string      `csv:"id"`
-	DisplayName     *string      `csv:"display_name"`
-	AlternateTitles jsontype     `csv:"alternate_titles"`
-	CountryCodes    jsontype     `csv:"country_codes"`
-	HierarchyLevel  *json.Number `csv:"hierarchy_level"`
-	ParentPublisher *string      `csv:"parent_publisher"`
-	WorksCount      *json.Number `csv:"works_count"`
-	CitedByCount    *json.Number `csv:"cited_by_count"`
-	SourcesApiUrl   *string      `csv:"sources_api_url"`
-	UpdatedDate     *string      `csv:"updated_date"`
+	Id              *string      `csv:"id" sqltype:"TEXT"`
+	DisplayName     *string      `csv:"display_name" sqltype:"TEXT"`
+	AlternateTitles jsontype     `csv:"alternate_titles" sqltype:"JSON"`
+	CountryCodes    jsontype     `csv:"country_codes" sqltype:"JSON"`
+	HierarchyLevel  *json.Number `csv:"hierarchy_level" sqltype:"INTEGER"`
+	ParentPublisher *string      `csv:"parent_publisher" sqltype:"TEXT"`
+	WorksCount      *json.Number `csv:"works_count" sqltype:"INTEGER"`
+	CitedByCount    *json.Number `csv:"cited_by_count" sqltype:"INTEGER"`
+	SourcesApiUrl   *string      `csv:"sources_api_url" sqltype:"TEXT"`
+	UpdatedDate     *string      `csv:"updated_date" sqltype:"TIMESTAMP"`
 }
+
+// CREATE TABLE openalex.publishers_counts_by_year (
+//     publisher_id text NOT NULL,
+//     year integer NOT NULL,
+//     works_count integer,
+//     cited_by_count integer,
+//     oa_works_count integer
+// );
 
 type publishersCountsByYearRow struct {
-	PublisherId  *string      `csv:"publisher_id"`
-	Year         *json.Number `csv:"year"`
-	WorksCount   *json.Number `csv:"works_count"`
-	CitedByCount *json.Number `csv:"cited_by_count"`
-	OaWorksCount *json.Number `csv:"oa_works_count"`
+	PublisherId  *string      `csv:"publisher_id" sqltype:"TEXT"`
+	Year         *json.Number `csv:"year" sqltype:"INTEGER"`
+	WorksCount   *json.Number `csv:"works_count" sqltype:"INTEGER"`
+	CitedByCount *json.Number `csv:"cited_by_count" sqltype:"INTEGER"`
+	OaWorksCount *json.Number `csv:"oa_works_count" sqltype:"INTEGER"`
 }
 
+// CREATE TABLE openalex.publishers_ids (
+//     publisher_id text,
+//     openalex text,
+//     ror text,
+//     wikidata text
+// );
+
 type publishersIdsRow struct {
-	PublisherId *string `csv:"publisher_id"`
-	Openalex    *string `csv:"openalex"`
-	Ror         *string `csv:"ror"`
-	Wikidata    *string `csv:"wikidata"`
+	PublisherId *string `csv:"publisher_id" sqltype:"TEXT"`
+	Openalex    *string `csv:"openalex" sqltype:"TEXT"`
+	Ror         *string `csv:"ror" sqltype:"TEXT"`
+	Wikidata    *string `csv:"wikidata" sqltype:"TEXT"`
 }
 
 func convertPublishers(gzipPaths iter.Seq[string], outputPath string, chunk int) {

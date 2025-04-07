@@ -9,114 +9,224 @@ import (
 	"path/filepath"
 )
 
+// CREATE TABLE openalex.works (
+//     id text NOT NULL,
+//     doi text,
+//     title text,
+//     display_name text,
+//     publication_year integer,
+//     publication_date text,
+//     type text,
+//     cited_by_count integer,
+//     is_retracted boolean,
+//     is_paratext boolean,
+//     cited_by_api_url text,
+//     abstract_inverted_index json,
+//     language text
+// );
+
 type worksRow struct {
-	Id                    *string      `csv:"id"`
-	Doi                   *string      `csv:"doi"`
-	Title                 *string      `csv:"title"`
-	DisplayName           *string      `csv:"display_name"`
-	PublicationYear       *json.Number `csv:"publication_year"`
-	PublicationDate       *string      `csv:"publication_date"`
-	Type                  *string      `csv:"type"`
-	CitedByCount          *json.Number `csv:"cited_by_count"`
-	IsRetraction          *bool        `csv:"is_retracted"`
-	IsParatext            *bool        `csv:"is_paratext"`
-	CitedByApiUrl         *string      `csv:"cited_by_api_url"`
-	AbstractInvertedIndex jsontype     `csv:"abstract_inverted_index"`
-	Language              *string      `csv:"language"`
+	Id                    *string      `csv:"id" sqltype:"TEXT"`
+	Doi                   *string      `csv:"doi" sqltype:"TEXT"`
+	Title                 *string      `csv:"title" sqltype:"TEXT"`
+	DisplayName           *string      `csv:"display_name" sqltype:"TEXT"`
+	PublicationYear       *json.Number `csv:"publication_year" sqltype:"INTEGER"`
+	PublicationDate       *string      `csv:"publication_date" sqltype:"TEXT"`
+	Type                  *string      `csv:"type" sqltype:"TEXT"`
+	CitedByCount          *json.Number `csv:"cited_by_count" sqltype:"INTEGER"`
+	IsRetraction          *bool        `csv:"is_retracted" sqltype:"BOOLEAN"`
+	IsParatext            *bool        `csv:"is_paratext" sqltype:"BOOLEAN"`
+	CitedByApiUrl         *string      `csv:"cited_by_api_url" sqltype:"TEXT"`
+	AbstractInvertedIndex jsontype     `csv:"abstract_inverted_index" sqltype:"JSON"`
+	Language              *string      `csv:"language" sqltype:"TEXT"`
 }
+
+// CREATE TABLE openalex.works_primary_locations (
+//     work_id text,
+//     source_id text,
+//     landing_page_url text,
+//     pdf_url text,
+//     is_oa boolean,
+//     version text,
+//     license text
+// );
 
 type worksPrimaryLocationsRow struct {
-	WorkId         *string `csv:"work_id"`
-	SourceId       *string `csv:"source_id"`
-	LandingPageUrl *string `csv:"landing_page_url"`
-	PdfUrl         *string `csv:"pdf_url"`
-	IsOa           *bool   `csv:"is_oa"`
-	Version        *string `csv:"version"`
-	License        *string `csv:"license"`
+	WorkId         *string `csv:"work_id" sqltype:"TEXT"`
+	SourceId       *string `csv:"source_id" sqltype:"TEXT"`
+	LandingPageUrl *string `csv:"landing_page_url" sqltype:"TEXT"`
+	PdfUrl         *string `csv:"pdf_url" sqltype:"TEXT"`
+	IsOa           *bool   `csv:"is_oa" sqltype:"BOOLEAN"`
+	Version        *string `csv:"version" sqltype:"TEXT"`
+	License        *string `csv:"license" sqltype:"TEXT"`
 }
+
+// CREATE TABLE openalex.works_locations (
+//     work_id text,
+//     source_id text,
+//     landing_page_url text,
+//     pdf_url text,
+//     is_oa boolean,
+//     version text,
+//     license text
+// );
 
 type worksLocationsRow struct {
-	WorkId         *string `csv:"work_id"`
-	SourceId       *string `csv:"source_id"`
-	LandingPageUrl *string `csv:"landing_page_url"`
-	PdfUrl         *string `csv:"pdf_url"`
-	IsOa           *bool   `csv:"is_oa"`
-	Version        *string `csv:"version"`
-	License        *string `csv:"license"`
+	WorkId         *string `csv:"work_id" sqltype:"TEXT"`
+	SourceId       *string `csv:"source_id" sqltype:"TEXT"`
+	LandingPageUrl *string `csv:"landing_page_url" sqltype:"TEXT"`
+	PdfUrl         *string `csv:"pdf_url" sqltype:"TEXT"`
+	IsOa           *bool   `csv:"is_oa" sqltype:"BOOLEAN"`
+	Version        *string `csv:"version" sqltype:"TEXT"`
+	License        *string `csv:"license" sqltype:"TEXT"`
 }
+
+// CREATE TABLE openalex.works_best_oa_locations (
+//     work_id text,
+//     source_id text,
+//     landing_page_url text,
+//     pdf_url text,
+//     is_oa boolean,
+//     version text,
+//     license text
+// );
 
 type worksBestOaLocationsRow struct {
-	WorkId         *string `csv:"work_id"`
-	SourceId       *string `csv:"source_id"`
-	LandingPageUrl *string `csv:"landing_page_url"`
-	PdfUrl         *string `csv:"pdf_url"`
-	IsOa           *bool   `csv:"is_oa"`
-	Version        *string `csv:"version"`
-	License        *string `csv:"license"`
+	WorkId         *string `csv:"work_id" sqltype:"TEXT"`
+	SourceId       *string `csv:"source_id" sqltype:"TEXT"`
+	LandingPageUrl *string `csv:"landing_page_url" sqltype:"TEXT"`
+	PdfUrl         *string `csv:"pdf_url" sqltype:"TEXT"`
+	IsOa           *bool   `csv:"is_oa" sqltype:"BOOLEAN"`
+	Version        *string `csv:"version" sqltype:"TEXT"`
+	License        *string `csv:"license" sqltype:"TEXT"`
 }
+
+// CREATE TABLE openalex.works_authorships (
+//     work_id text,
+//     author_position text,
+//     author_id text,
+//     institution_id text,
+//     raw_affiliation_string text
+// );
 
 type worksAuthorshipsRow struct {
-	WorkId               *string `csv:"work_id"`
-	AuthorPosition       *string `csv:"author_position"`
-	AuthorId             *string `csv:"author_id"`
-	InstitutionId        *string `csv:"institution_id"`
-	RawAffiliationString *string `csv:"raw_affiliation_string"`
+	WorkId               *string `csv:"work_id" sqltype:"TEXT"`
+	AuthorPosition       *string `csv:"author_position" sqltype:"TEXT"`
+	AuthorId             *string `csv:"author_id" sqltype:"TEXT"`
+	InstitutionId        *string `csv:"institution_id" sqltype:"TEXT"`
+	RawAffiliationString *string `csv:"raw_affiliation_string" sqltype:"TEXT"`
 }
+
+// CREATE TABLE openalex.works_biblio (
+//     work_id text NOT NULL,
+//     volume text,
+//     issue text,
+//     first_page text,
+//     last_page text
+// );
 
 type worksBiblioRow struct {
-	WorkId    *string `csv:"work_id"`
-	Volume    *string `csv:"volume"`
-	Issue     *string `csv:"issue"`
-	FirstPage *string `csv:"first_page"`
-	LastPage  *string `csv:"last_page"`
+	WorkId    *string `csv:"work_id" sqltype:"TEXT"`
+	Volume    *string `csv:"volume" sqltype:"TEXT"`
+	Issue     *string `csv:"issue" sqltype:"TEXT"`
+	FirstPage *string `csv:"first_page" sqltype:"TEXT"`
+	LastPage  *string `csv:"last_page" sqltype:"TEXT"`
 }
+
+// CREATE TABLE openalex.works_topics (
+//     work_id text,
+//     topic_id text,
+//     score real
+// );
 
 type worksTopicsRow struct {
-	WorkId  *string      `csv:"work_id"`
-	TopicId *string      `csv:"topic_id"`
-	Score   *json.Number `csv:"score"`
+	WorkId  *string      `csv:"work_id" sqltype:"TEXT"`
+	TopicId *string      `csv:"topic_id" sqltype:"TEXT"`
+	Score   *json.Number `csv:"score" sqltype:"REAL"`
 }
+
+// CREATE TABLE openalex.works_concepts (
+//     work_id text,
+//     concept_id text,
+//     score real
+// );
 
 type worksConceptsRow struct {
-	WorkId    *string      `csv:"work_id"`
-	ConceptId *string      `csv:"concept_id"`
-	Score     *json.Number `csv:"score"`
+	WorkId    *string      `csv:"work_id" sqltype:"TEXT"`
+	ConceptId *string      `csv:"concept_id" sqltype:"TEXT"`
+	Score     *json.Number `csv:"score" sqltype:"REAL"`
 }
+
+// CREATE TABLE openalex.works_ids (
+//     work_id text NOT NULL,
+//     openalex text,
+//     doi text,
+//     mag bigint,
+//     pmid text,
+//     pmcid text
+// );
 
 type worksIdsRow struct {
-	WorkId   *string      `csv:"work_id"`
-	Openalex *string      `csv:"openalex"`
-	Doi      *string      `csv:"doi"`
-	Mag      *json.Number `csv:"mag"`
-	Pmid     *string      `csv:"pmid"`
-	Pmcid    *string      `csv:"pmcid"`
+	WorkId   *string      `csv:"work_id" sqltype:"TEXT"`
+	Openalex *string      `csv:"openalex" sqltype:"TEXT"`
+	Doi      *string      `csv:"doi" sqltype:"TEXT"`
+	Mag      *json.Number `csv:"mag" sqltype:"BIGINT"`
+	Pmid     *string      `csv:"pmid" sqltype:"TEXT"`
+	Pmcid    *string      `csv:"pmcid" sqltype:"TEXT"`
 }
+
+// CREATE TABLE openalex.works_mesh (
+//     work_id text,
+//     descriptor_ui text,
+//     descriptor_name text,
+//     qualifier_ui text,
+//     qualifier_name text,
+//     is_major_topic boolean
+// );
 
 type worksMeshRow struct {
-	WorkId         *string `csv:"work_id"`
-	DescriptorUi   *string `csv:"descriptor_ui"`
-	DescriptorName *string `csv:"descriptor_name"`
-	QualifierUi    *string `csv:"qualifier_ui"`
-	QualifierName  *string `csv:"qualifier_name"`
-	IsMajorTopic   *bool   `csv:"is_major_topic"`
+	WorkId         *string `csv:"work_id" sqltype:"TEXT"`
+	DescriptorUi   *string `csv:"descriptor_ui" sqltype:"TEXT"`
+	DescriptorName *string `csv:"descriptor_name" sqltype:"TEXT"`
+	QualifierUi    *string `csv:"qualifier_ui" sqltype:"TEXT"`
+	QualifierName  *string `csv:"qualifier_name" sqltype:"TEXT"`
+	IsMajorTopic   *bool   `csv:"is_major_topic" sqltype:"BOOLEAN"`
 }
+
+// CREATE TABLE openalex.works_open_access (
+//     work_id text NOT NULL,
+//     is_oa boolean,
+//     oa_status text,
+//     oa_url text,
+//     any_repository_has_fulltext boolean
+// );
 
 type worksOpenAccessRow struct {
-	WorkId                   *string `csv:"work_id"`
-	IsOa                     *bool   `csv:"is_oa"`
-	OaStatus                 *string `csv:"oa_status"`
-	OaUrl                    *string `csv:"oa_url"`
-	AnyRepositoryHasFulltext *bool   `csv:"any_repository_has_fulltext"`
+	WorkId                   *string `csv:"work_id" sqltype:"TEXT"`
+	IsOa                     *bool   `csv:"is_oa" sqltype:"BOOLEAN"`
+	OaStatus                 *string `csv:"oa_status" sqltype:"TEXT"`
+	OaUrl                    *string `csv:"oa_url" sqltype:"TEXT"`
+	AnyRepositoryHasFulltext *bool   `csv:"any_repository_has_fulltext" sqltype:"BOOLEAN"`
 }
+
+// CREATE TABLE openalex.works_referenced_works (
+//     work_id text,
+//     referenced_work_id text
+// );
 
 type worksReferencedWorksRow struct {
-	WorkId           *string `csv:"work_id"`
-	ReferencedWorkId *string `csv:"referenced_work_id"`
+	WorkId           *string `csv:"work_id" sqltype:"TEXT"`
+	ReferencedWorkId *string `csv:"referenced_work_id" sqltype:"TEXT"`
 }
 
+// CREATE TABLE openalex.works_related_works (
+//     work_id text,
+//     related_work_id text
+// );
+
 type worksRelatedWorksRow struct {
-	WorkId        *string `csv:"work_id"`
-	RelatedWorkId *string `csv:"related_work_id"`
+	WorkId        *string `csv:"work_id" sqltype:"TEXT"`
+	RelatedWorkId *string `csv:"related_work_id" sqltype:"TEXT"`
 }
 
 func convertWorks(gzipPaths iter.Seq[string], outputPath string, chunk int) {

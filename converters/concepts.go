@@ -9,47 +9,90 @@ import (
 	"path/filepath"
 )
 
+// CREATE TABLE openalex.concepts (
+//     id text NOT NULL,
+//     wikidata text,
+//     display_name text,
+//     level integer,
+//     description text,
+//     works_count integer,
+//     cited_by_count integer,
+//     image_url text,
+//     image_thumbnail_url text,
+//     works_api_url text,
+//     updated_date timestamp without time zone
+// );
+
 type conceptsRow struct {
-	Id                *string      `csv:"id"`
-	Wikidata          *string      `csv:"wikidata"`
-	DisplayName       *string      `csv:"display_name"`
-	Level             *json.Number `csv:"level"`
-	Description       *string      `csv:"description"`
-	WorksCount        *json.Number `csv:"works_count"`
-	CitedByCount      *json.Number `csv:"cited_by_count"`
-	ImageUrl          *string      `csv:"image_url"`
-	ImageThumbnailUrl *string      `csv:"image_thumbnail_url"`
-	WorksApiUrl       *string      `csv:"works_api_url"`
-	UpdatedDate       *string      `csv:"updated_date"`
+	Id                *string      `csv:"id" sqltype:"TEXT"`
+	Wikidata          *string      `csv:"wikidata" sqltype:"TEXT"`
+	DisplayName       *string      `csv:"display_name" sqltype:"TEXT"`
+	Level             *json.Number `csv:"level" sqltype:"INTEGER"`
+	Description       *string      `csv:"description" sqltype:"TEXT"`
+	WorksCount        *json.Number `csv:"works_count" sqltype:"INTEGER"`
+	CitedByCount      *json.Number `csv:"cited_by_count" sqltype:"INTEGER"`
+	ImageUrl          *string      `csv:"image_url" sqltype:"TEXT"`
+	ImageThumbnailUrl *string      `csv:"image_thumbnail_url" sqltype:"TEXT"`
+	WorksApiUrl       *string      `csv:"works_api_url" sqltype:"TEXT"`
+	UpdatedDate       *string      `csv:"updated_date" sqltype:"TIMESTAMP"`
 }
+
+// CREATE TABLE openalex.concepts_ancestors (
+//     concept_id text,
+//     ancestor_id text
+// );
 
 type conceptsAncestorsRow struct {
-	ConceptId  *string `csv:"concept_id"`
-	AncestorId *string `csv:"ancestor_id"`
+	ConceptId  *string `csv:"concept_id" sqltype:"TEXT"`
+	AncestorId *string `csv:"ancestor_id" sqltype:"TEXT"`
 }
+
+// CREATE TABLE openalex.concepts_counts_by_year (
+//     concept_id text NOT NULL,
+//     year integer NOT NULL,
+//     works_count integer,
+//     cited_by_count integer,
+//     oa_works_count integer
+// );
 
 type conceptsCountsByYearRow struct {
-	ConceptId    *string      `csv:"concept_id"`
-	Year         *json.Number `csv:"year"`
-	WorksCount   *json.Number `csv:"works_count"`
-	CitedByCount *json.Number `csv:"cited_by_count"`
-	OaWorksCount *json.Number `csv:"oa_works_count"`
+	ConceptId    *string      `csv:"concept_id" sqltype:"TEXT"`
+	Year         *json.Number `csv:"year" sqltype:"INTEGER"`
+	WorksCount   *json.Number `csv:"works_count" sqltype:"INTEGER"`
+	CitedByCount *json.Number `csv:"cited_by_count" sqltype:"INTEGER"`
+	OaWorksCount *json.Number `csv:"oa_works_count" sqltype:"INTEGER"`
 }
+
+// CREATE TABLE openalex.concepts_ids (
+//     concept_id text NOT NULL,
+//     openalex text,
+//     wikidata text,
+//     wikipedia text,
+//     umls_aui json,
+//     umls_cui json,
+//     mag bigint
+// );
 
 type conceptsIdsRow struct {
-	ConceptId *string      `csv:"concept_id"`
-	Openalex  *string      `csv:"openalex"`
-	Wikidata  *string      `csv:"wikidata"`
-	Wikipedia *string      `csv:"wikipedia"`
-	UmlsAui   jsontype     `csv:"umls_aui"`
-	UmlsCui   jsontype     `csv:"umls_cui"`
-	Mag       *json.Number `csv:"mag"`
+	ConceptId *string      `csv:"concept_id" sqltype:"TEXT"`
+	Openalex  *string      `csv:"openalex" sqltype:"TEXT"`
+	Wikidata  *string      `csv:"wikidata" sqltype:"TEXT"`
+	Wikipedia *string      `csv:"wikipedia" sqltype:"TEXT"`
+	UmlsAui   jsontype     `csv:"umls_aui" sqltype:"JSON"`
+	UmlsCui   jsontype     `csv:"umls_cui" sqltype:"JSON"`
+	Mag       *json.Number `csv:"mag" sqltype:"BIGINT"`
 }
 
+// CREATE TABLE openalex.concepts_related_concepts (
+//     concept_id text,
+//     related_concept_id text,
+//     score real
+// );
+
 type conceptsRelatedConceptsRow struct {
-	ConceptId        *string      `csv:"concept_id"`
-	RelatedConceptId *string      `csv:"related_concept_id"`
-	Score            *json.Number `csv:"score"`
+	ConceptId        *string      `csv:"concept_id" sqltype:"TEXT"`
+	RelatedConceptId *string      `csv:"related_concept_id" sqltype:"TEXT"`
+	Score            *json.Number `csv:"score" sqltype:"REAL"`
 }
 
 func convertConcepts(gzipPaths iter.Seq[string], outputPath string, chunk int) {

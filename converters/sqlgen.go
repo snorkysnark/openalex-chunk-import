@@ -12,16 +12,21 @@ func writeDuckdbCopy(w io.Writer, schema any, table string, basePath string, num
 	t := reflect.TypeOf(schema)
 
 	fieldNames := make([]string, t.NumField())
+	fieldTypes := make([]string, t.NumField())
 	for i := range t.NumField() {
-		fieldNames[i] = t.Field(i).Tag.Get("csv")
+		field := t.Field(i)
+
+		fieldNames[i] = field.Tag.Get("csv")
+		fieldTypes[i] = fmt.Sprintf("'%v': '%v'", field.Tag.Get("csv"), field.Tag.Get("sqltype"))
 	}
-	fieldNamesStr := strings.Join(fieldNames, ", ")
 
 	for chunk := range numChunks {
 		fmt.Fprintf(
 			w,
-			"COPY openalex.%v(%v) FROM '%v';\n",
-			table, fieldNamesStr, filepath.Join(basePath, fmt.Sprintf("%v%v.csv.gz", table, chunk)),
+			"INSERT INTO openalex.%v(%v)\nSELECT * FROM read_csv('%v', columns = {%v});\n",
+			table, strings.Join(fieldNames, ", "),
+			filepath.Join(basePath, fmt.Sprintf("%v%v.csv.gz", table, chunk)),
+			strings.Join(fieldTypes, ", "),
 		)
 	}
 }

@@ -12,23 +12,42 @@ import (
 	"github.com/samber/lo"
 )
 
+// CREATE TABLE openalex.topics (
+//     id text NOT NULL,
+//     display_name text,
+//     subfield_id text,
+//     subfield_display_name text,
+//     field_id text,
+//     field_display_name text,
+//     domain_id text,
+//     domain_display_name text,
+//     description text,
+//     keywords text,
+//     works_api_url text,
+//     wikipedia_id text,
+//     works_count integer,
+//     cited_by_count integer,
+//     updated_date timestamp without time zone,
+//     siblings json
+// );
+
 type topicsRow struct {
-	Id                  *string      `csv:"id"`
-	DisplayName         *string      `csv:"display_name"`
-	SubfieldId          *string      `csv:"subfield_id"`
-	SubfieldDisplayName *string      `csv:"subfield_display_name"`
-	FieldId             *string      `csv:"field_id"`
-	FieldDisplayName    *string      `csv:"field_display_name"`
-	DomainId            *string      `csv:"domain_id"`
-	DomainDisplayName   *string      `csv:"domain_display_name"`
-	Description         *string      `csv:"description"`
-	Keywords            *string      `csv:"keywords"`
-	WorksApiUrl         *string      `csv:"works_api_url"`
-	WikipediaId         *string      `csv:"wikipedia_id"`
-	WorksCount          *json.Number `csv:"works_count"`
-	CitedByCount        *json.Number `csv:"cited_by_count"`
-	UpdatedDate         *string      `csv:"updated_date"`
-	Siblings            jsontype     `csv:"siblings"`
+	Id                  *string      `csv:"id" sqltype:"TEXT"`
+	DisplayName         *string      `csv:"display_name" sqltype:"TEXT"`
+	SubfieldId          *string      `csv:"subfield_id" sqltype:"TEXT"`
+	SubfieldDisplayName *string      `csv:"subfield_display_name" sqltype:"TEXT"`
+	FieldId             *string      `csv:"field_id" sqltype:"TEXT"`
+	FieldDisplayName    *string      `csv:"field_display_name" sqltype:"TEXT"`
+	DomainId            *string      `csv:"domain_id" sqltype:"TEXT"`
+	DomainDisplayName   *string      `csv:"domain_display_name" sqltype:"TEXT"`
+	Description         *string      `csv:"description" sqltype:"TEXT"`
+	Keywords            *string      `csv:"keywords" sqltype:"TEXT"`
+	WorksApiUrl         *string      `csv:"works_api_url" sqltype:"TEXT"`
+	WikipediaId         *string      `csv:"wikipedia_id" sqltype:"TEXT"`
+	WorksCount          *json.Number `csv:"works_count" sqltype:"INTEGER"`
+	CitedByCount        *json.Number `csv:"cited_by_count" sqltype:"INTEGER"`
+	UpdatedDate         *string      `csv:"updated_date" sqltype:"TIMESTAMP"`
+	Siblings            jsontype     `csv:"siblings" sqltype:"JSON"`
 }
 
 func getIdAndDisplayName(key string, data map[string]any) (*string, *string) {
