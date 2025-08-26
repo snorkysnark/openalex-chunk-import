@@ -50,7 +50,7 @@ type sourcesRow struct {
 type sourcesCountsByYearRow struct {
 	SourceId     *string      `csv:"source_id" sqltype:"TEXT"`
 	Year         *json.Number `csv:"year" sqltype:"INTEGER"`
-	WorksCount   *json.Number `csv:"works_count" sqtype:"INTEGER"`
+	WorksCount   *json.Number `csv:"works_count" sqltype:"INTEGER"`
 	CitedByCount *json.Number `csv:"cited_by_count" sqltype:"INTEGER"`
 	OaWorksCount *json.Number `csv:"oa_works_count" sqltype:"INTEGER"`
 }
